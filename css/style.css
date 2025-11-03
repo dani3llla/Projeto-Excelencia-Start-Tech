@@ -421,7 +421,7 @@ button:hover {
 
     #mulher-imagem-quadrada {
         display: block;
-        width: 270px;
+        width: 230px;
         margin-left: 20px;
         border-radius: 20px;
     }
@@ -434,6 +434,7 @@ button:hover {
     .subtitulo,
     .texto-intro {
         font-size: 12px;
+        max-width: 350px;
     }
 
 
@@ -466,6 +467,7 @@ button:hover {
     .subtitulo,
     .texto-intro {
         font-size: 15px;
+        max-width: 530px;
     }
 
 
