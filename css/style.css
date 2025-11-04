@@ -237,68 +237,70 @@ button:hover {
     flex: 1;
     text-align: center;
 }
+
 /* ........................................Teste de icones do site..................................... */
 /* ÍCONES - SEÇÃO PRINCIPAL */
 .steps-section {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 60px;
-  padding: 80px 20px;
-  text-align: center;
-  background-color: var(--cor-principal);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 60px;
+    padding: 80px 20px;
+    text-align: center;
+    background-color: var(--cor-principal);
 }
 
 .step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 200px;
-  min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    min-width: 150px;
 }
 
 .icon {
-  border: 2px solid #fff;
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 15px;
-  transition: transform 0.3s ease;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 190px;
+    height: 190px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
 }
 
 .icon i {
-  font-size: 36px;
-  color: #fff;
+    font-size: 36px;
+    color: #fff;
 }
 
 .icon:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 .step p {
-  font-size: 15px;
-  font-weight: 300;
-  line-height: 1.5;
-  color: #fff;
+    font-size: 25px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #fff;
 }
 
 /* RESPONSIVIDADE */
 @media (max-width: 700px) {
-  .steps-section {
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-  }
+    .steps-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
 
-  .step {
-    width: 100%;
-    max-width: 250px;
-  }
+    .step {
+        width: 100%;
+        max-width: 250px;
+    }
 }
+
 /* .......................................Fim do teste de icones do site....................................... */
 
 .infos {
@@ -379,7 +381,7 @@ button:hover {
 
 @media screen and (max-width: 1110px) {
 
-        .container1 {
+    .container1 {
         padding: 10px;
 
     }
@@ -439,7 +441,7 @@ button:hover {
 
 @media screen and (max-width: 913px) {
 
-        .container1 {
+    .container1 {
         padding: 10px;
 
     }
@@ -510,7 +512,7 @@ button:hover {
 
 @media screen and (max-width: 745px) {
 
-        .container1 {
+    .container1 {
         padding: 10px;
 
     }
