@@ -1137,7 +1137,11 @@ button:hover {
 /* ........................ RODAPÉ .......................  */
 
 
- /* .................... MODAL.................... */
+
+
+
+
+ /* .................... MODAL LOGIN.................... */
  .janela_escura {
     position: fixed; 
     top: 0;
@@ -1328,4 +1332,4 @@ button:hover {
     font-size: 1rem;
     cursor: pointer;
 }
-
+/* ................ MODAL DE LOGIN FIM .................  */
