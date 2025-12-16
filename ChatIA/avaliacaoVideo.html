@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Vídeo - ExcelencIA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="avaliacaoVideo.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/tema escuro/excelencia texto ia.PNG">
+</head>
+
+<body>
+    <div class="chat-container">
+        <!-- MAIN CONTENT -->
+        <div class="chat-main" id="chatMain">
+            <!-- HEADER -->
+            <div class="chat-header">
+                <button class="back-home-btn" id="backHomeBtn" title="Voltar para página inicial">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <div class="chat-title">
+                    <i class="fas fa-video"></i>
+                    Análise de Vídeo com Gemini
+                </div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area" id="contentArea">
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <i class="fas fa-film upload-icon"></i>
+                            <h2>Envie seu vídeo para análise</h2>
+                            <p class="upload-subtitle">Nossa IA analisará suas expressões, humor e comportamento</p>
+                        </div>
+
+                        <form id="analiseForm" class="analysis-form">
+                            <div class="form-group">
+                                <label for="videoFile">
+                                    <i class="fas fa-file-video"></i>
+                                    Selecione o Vídeo
+                                </label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="videoFile" name="video_upload" accept="video/*" required>
+                                    <span class="file-input-text" id="fileInputText">Nenhum arquivo selecionado</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="modelName">
+                                    <i class="fas fa-brain"></i>
+                                    Modelo Gemini
+                                </label>
+                                <select id="modelName" name="model_name" class="form-select">
+                                    <option value="gemini-2.5-flash">gemini-2.5-flash (Padrão - Mais rápido)</option>
+                                    <option value="gemini-2.5-pro">gemini-2.5-pro (Mais capacidade)</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" id="submitButton" class="btn-submit">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar para Análise
+                            </button>
+                        </form>
+
+                        <div class="loading" id="loadingMessage">
+                            <div class="loading-spinner"></div>
+                            <p>Aguarde, enviando e analisando o vídeo...</p>
+                            <span class="loading-subtext">Pode demorar alguns minutos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultadoContainer"></div>
+            </div>
+        </div>
+
+        <!-- ===== SCORE MODAL ===== -->
+        <div class="score-overlay" id="scoreOverlay" aria-hidden="true">
+            <div class="score-modal" role="dialog" aria-modal="true" aria-labelledby="scoreTitle">
+                <button class="score-close-btn" id="scoreCloseBtn" aria-label="Fechar">&times;</button>
+                <div class="score-header">
+                    <h2 id="scoreTitle">Análise Concluída!</h2>
+                    <p class="score-subtitle">Seu desempenho no vídeo</p>
+                </div>
+                <div class="score-body">
+                    <div class="score-circle" id="scoreCircle" style="--p:0%">
+                        <span id="scorePercent">0%</span>
+                    </div>
+                    <p class="score-note" id="scoreNote">Excelente! Continue praticando para melhorar ainda mais.</p>
+                </div>
+                <div class="score-actions">
+                    <button class="btn-report" id="viewReportBtn">
+                        <i class="fas fa-file-alt"></i>
+                        Ver relatório completo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('analiseForm');
+        const resultadoContainer = document.getElementById('resultadoContainer');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const submitButton = document.getElementById('submitButton');
+        const videoFileInput = document.getElementById('videoFile');
+        const fileInputText = document.getElementById('fileInputText');
+        const backHomeBtn = document.getElementById('backHomeBtn');
+
+        // Score modal elements
+        const scoreOverlay = document.getElementById('scoreOverlay');
+        const scoreCloseBtn = document.getElementById('scoreCloseBtn');
+        const scorePercentEl = document.getElementById('scorePercent');
+        const scoreCircleEl = document.getElementById('scoreCircle');
+        const scoreNoteEl = document.getElementById('scoreNote');
+        const viewReportBtn = document.getElementById('viewReportBtn');
+
+        backHomeBtn.addEventListener('click', () => {
+            window.location.href = '../html/homeLogin.html';
+        });
+
+        // File input handler
+        videoFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileInputText.textContent = e.target.files[0].name;
+            } else {
+                fileInputText.textContent = 'Nenhum arquivo selecionado';
+            }
+        });
+
+        function calculateScore(analiseText) {
+            // Análise simples baseada no tamanho e palavras-chave positivas
+            const text = analiseText.toLowerCase();
+            const positiveWords = ['excelente', 'ótimo', 'bom', 'adequado', 'profissional', 'confiante', 'positivo'];
+            const negativeWords = ['melhorar', 'evitar', 'atenção', 'cuidado', 'negativo'];
+            
+            let score = 70; // Base
+            
+            // Adiciona pontos por palavras positivas
+            positiveWords.forEach(word => {
+                const count = (text.match(new RegExp(word, 'g')) || []).length;
+                score += count * 3;
+            });
+            
+            // Remove pontos por palavras negativas
+            negativeWords.forEach(word => {
+                const count = (text.match(new RegExp(word, 'g')) || []).length;
+                score -= count * 2;
+            });
+            
+            // Limita entre 0 e 100
+            return Math.min(100, Math.max(0, Math.round(score)));
+        }
+
+        function getScoreMessage(score) {
+            if (score >= 90) return 'Excepcional! Seu desempenho foi excelente.';
+            if (score >= 75) return 'Muito bom! Continue assim.';
+            if (score >= 60) return 'Bom desempenho. Há pontos a melhorar.';
+            if (score >= 45) return 'Desempenho regular. Pratique mais.';
+            return 'Há muito espaço para melhoria. Continue tentando!';
+        }
+
+        function showScoreModal(score, analiseText) {
+            const percent = Math.min(100, Math.max(0, score));
+            scorePercentEl.textContent = percent + '%';
+            scoreCircleEl.style.setProperty('--p', percent + '%');
+            scoreNoteEl.textContent = getScoreMessage(percent);
+            
+            // Salva análise para visualização no relatório
+            sessionStorage.setItem('lastAnalysis', analiseText);
+            sessionStorage.setItem('lastScore', percent);
+            
+            scoreOverlay.classList.add('active');
+            scoreOverlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function hideScoreModal() {
+            scoreOverlay.classList.remove('active');
+            scoreOverlay.setAttribute('aria-hidden', 'true');
+        }
+
+        scoreCloseBtn.addEventListener('click', hideScoreModal);
+        scoreOverlay.addEventListener('click', (e) => {
+            if (e.target === scoreOverlay) hideScoreModal();
+        });
+
+        viewReportBtn.addEventListener('click', () => {
+            window.location.href = '../html/relatorios.html';
+        });
+
+        const API_URL = "http://localhost:8000/api/v1/analisar-video/";
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const videoFile = document.getElementById('videoFile').files[0];
+            const modelName = document.getElementById('modelName').value;
+            const promptAnalise = "Você é um especialista em análise de expressões fáciais e humor das pessoas e deve analisar este vídeo, "
+                + "identificando as principais ações. reaçoes, humores e sentimentos passados pela pessoa do vídeo."
+                + "Você está aqui para dar dicas humanizadas sobre como melhorar o comportamento em um processo seletivo,"
+                + " pois os vídeos analisados são de processo seletivo testes feitos com você."
+                + "\n\nIDIOMA :"
+                + "\nIdentifique e retorne no mesmo idioma da solicitação enviada (PT-BR, EN, ES, etc.)."
+                + "\n\nRetorne o humor correto para cada segundo do vídeo."
+                + "\n\nRegras :"
+                + "\nSEMPRE analise com calma e procure em vídeos de analise no youtube e em outros meios"
+                + "para responder corretamente sobre as expressões da pessoa do vídeo"
+                + "\nCONSIDERE os sons apenas pertinentes ao assunto (conversas, dúvidas, assuntos técnicos, etc.)"
+                + " do processo seletivo e no quanto elas impactaram no humor da pessoa da imagem"
+                + "\nDETALHE qual segundo específico do vídeo foi notado o humor"
+                + "\n\nTIPO DE RESPOSTA :"
+                + "\n1. -> SEMPRE foque na empatia para falar sobre os humores da pessoa."
+                + "\n2. -> Se comunique de maneira pacífica, buscando críticas construtivas."
+                + "\n3. -> Jamais use palavras que podem deixar uma pessoa magoada."
+                + "\n4. -> Quando notar algo a ser melhorado, informe de maneira construtiva falando 'Você pode fazer x coisa "
+                + "em vez de y coisa, pois assim melhorará em tal análise do recrutador'."
+                + "\n\nPADRÃO DE RESPOSTA :"
+                + "\n1- Seção *Análise* onde você começará com o que analisou sobre cada segundo do vídeo."
+                + "\n2- Seção *Dicas* onde irá colocar as dicas construtivas para a pessoa."
+                + "\n3- Seção *Apoio* onde você enviará uma mensagem de apoio com pontos positivos do que avaliou."
+                + "\n\nOrganize as seções acima com um design apresentável, com emojis (se possível)";
+
+            formData.append('video_upload', videoFile);
+            formData.append('prompt_analise', promptAnalise);
+            formData.append('model_name', modelName);
+
+            resultadoContainer.innerHTML = '';
+            loadingMessage.style.display = 'flex';
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.status === "sucesso") {
+                        const analiseText = data.analise;
+                        const score = calculateScore(analiseText);
+                        
+                        resultadoContainer.innerHTML = `
+                            <div class="resultado-card">
+                                <div class="resultado-header">
+                                    <i class="fas fa-check-circle"></i>
+                                    <h3>Análise Concluída com Sucesso!</h3>
+                                </div>
+                                <div class="resultado-content">
+                                    <pre>${analiseText}</pre>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Mostra o modal de score após 500ms
+                        setTimeout(() => {
+                            showScoreModal(score, analiseText);
+                        }, 500);
+                    } else {
+                        resultadoContainer.innerHTML = `
+                            <div class="erro-card">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>Erro no Processamento</h3>
+                                <p>${data.detail || 'Resposta desconhecida da API.'}</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const errorMessage = data.detail || `Erro HTTP: ${response.status} ${response.statusText}`;
+                    resultadoContainer.innerHTML = `
+                        <div class="erro-card">
+                            <i class="fas fa-times-circle"></i>
+                            <h3>Erro na API</h3>
+                            <p>${errorMessage}</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                resultadoContainer.innerHTML = `
+                    <div class="erro-card">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Erro de Conexão</h3>
+                        <p>Não foi possível alcançar a API. Verifique se o servidor Python está rodando em ${API_URL}</p>
+                        <small>Detalhe: ${error.message}</small>
+                    </div>
+                `;
+            } finally {
+                loadingMessage.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

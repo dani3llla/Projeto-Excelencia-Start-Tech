@@ -193,9 +193,9 @@ body {
 .back-home-btn {
     width: 100%;
     padding: 10px 12px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    color: #00d4ff;
+    background: rgba(25, 100, 33, 0.1);
+    border: 1px solid var(--cor-secundaria);
+    color: #f1f1f1;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -209,8 +209,8 @@ body {
 }
 
 .back-home-btn:hover {
-    background: rgba(0, 212, 255, 0.2);
-    border-color: #00d4ff;
+    background: rgba(54, 102, 65, 0.2);
+    border-color: var(--cor-secundaria);
     transform: translateY(-2px);
 }
 

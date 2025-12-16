@@ -1,17 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ⚠️ SUBSTITUA PELA SUA CHAVE DE API DO GEMINI
-    // LEMBRE-SE: EXPOR ESTA CHAVE NO FRONT-END É INSEGURO.
-    const GEMINI_API_KEY = "${GEMINI-API-KEY}"; 
+    const apiKeyMeta = document.querySelector('meta[name="gemini-api-key"]');
+    const GEMINI_API_KEY = (apiKeyMeta?.content || '').trim();
     const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 
     const launcherBtn = document.getElementById('chatbot-launcher');
     const widget = document.getElementById('chatbot-widget');
     const closeBtn = document.getElementById('close-button');
+    const form = document.getElementById('chatbot-form');
     const sendBtn = document.getElementById('send-button');
     const userInput = document.getElementById('user-input');
     const messageArea = document.getElementById('message-area');
     const quickReplyBtns = document.querySelectorAll('.quick-reply-btn');
+    const launcherDefaultContent = launcherBtn?.innerHTML;
+    const launcherCloseContent = '<span aria-hidden="true">✕</span>';
+
+    if (!launcherBtn || !widget || !closeBtn || !sendBtn || !userInput || !messageArea) return;
 
     let isChatOpen = false;
 
@@ -19,8 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleChat() {
         isChatOpen = !isChatOpen;
-        widget.style.display = isChatOpen ? 'flex' : 'none';
-        launcherBtn.textContent = isChatOpen ? '✕' : '💬';
+        widget.classList.toggle('open', isChatOpen);
+        widget.setAttribute('aria-hidden', String(!isChatOpen));
+        launcherBtn.setAttribute('aria-expanded', String(isChatOpen));
+        launcherBtn.innerHTML = isChatOpen ? launcherCloseContent : launcherDefaultContent;
         scrollToBottom();
     }
 
@@ -47,7 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
         messageArea.appendChild(createMessageElement(text, 'sent'));
         userInput.value = '';
         scrollToBottom();
-        
+
+        if (!GEMINI_API_KEY) {
+            messageArea.appendChild(createMessageElement('Configure a chave da API para enviar mensagens.', 'received'));
+            return;
+        }
+
         // Desabilita input e botão para evitar spam
         userInput.disabled = true;
         sendBtn.disabled = true;
@@ -111,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENT LISTENERS ---
 
+    form?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        sendMessage(userInput.value);
+    });
+
     launcherBtn.addEventListener('click', toggleChat);
     closeBtn.addEventListener('click', toggleChat);
 
@@ -131,8 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
     quickReplyBtns.forEach(button => {
         button.addEventListener('click', (e) => {
             const question = e.target.textContent;
+            if (!isChatOpen) toggleChat();
             sendMessage(question);
         });
     });
 
+    if (messageArea) {
+        messageArea.appendChild(createMessageElement('Olá! Como posso ajudar na sua preparação para entrevistas hoje?', 'received'));
+    }
 });
