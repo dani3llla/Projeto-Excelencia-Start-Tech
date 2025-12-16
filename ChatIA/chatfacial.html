@@ -1,226 +1,74 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulação de Entrevista com Vídeo - ExcelencIA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Simulador de Entrevista - IA</title>
     <link rel="stylesheet" href="chatfacial.css">
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/tema escuro/excelencia texto ia.PNG">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-
 <body>
-    <div class="interview-container">
-        <!-- OVERLAY -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- SIDEBAR - HISTÓRICO -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-               <img class="logo-excelencia" src="../assets/tema escuro/logo-excelencia.PNG" alt="ExcelencIA">
-               <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Fechar menu">
-                    <i class="fas fa-times"></i>
-                </button>
+    <div class="container">
+        <header>
+            <h1>Simulador de Entrevista</h1>
+            <p>Análise comportamental em tempo real via IA</p>
+        </header>
+
+        <main class="dashboard">
+            <div class="video-card">
+                <div class="live-indicator">AO VIVO</div>
+                <img src="http://localhost:5000/video" alt="Carregando Câmera..." id="camera-feed">
             </div>
 
-            <button class="back-home-btn" id="backHomeBtn" title="Voltar para página inicial">
-                <i class="fas fa-arrow-left"></i>
-                Voltar
-            </button>
-
-            <button class="new-simulation-btn" id="newSimulationBtn">
-                <i class="fas fa-video"></i>
-                Nova Simulação
-            </button>
-
-            <div class="simulation-history" id="simulationHistory">
-                <div class="simulation-item active" data-simulation-id="1">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Desenvolvedor - 23/01</span>
-                </div>
-                <div class="simulation-item" data-simulation-id="2">
-                    <i class="fas fa-check-circle"></i>
-                    <span>RH - 22/01</span>
-                </div>
-                <div class="simulation-item" data-simulation-id="3">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Liderança - 21/01</span>
-                </div>
-                <div class="simulation-item" data-simulation-id="4">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Apresentação - 20/01</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL DE SETUP (Aparece primeiro) -->
-        <div class="setup-overlay" id="setupOverlay">
-            <div class="setup-modal" id="setupModal">
-                <div class="setup-content">
-                    <div class="setup-header">
-                        <h1>SIMULAÇÃO DE ENTREVISTA</h1>
-                    </div>
-                    <p class="setup-subtitle">Tipo de entrevista:</p>
-
-                    <div class="setup-form">
-                        <!-- Área Profissional -->
-                        <div class="form-group">
-                            <label for="professionalArea">Área profissional:</label>
-                            <select id="professionalArea" class="form-select">
-                                <option value="">Selecione uma área</option>
-                                <option value="desenvolvimento">Desenvolvedor de Software</option>
-                                <option value="marketing">Supervisor de Marketing</option>
-                                <option value="vendas">Gerente de Vendas</option>
-                                <option value="rh">Analista de RH</option>
-                                <option value="design">Designer UX/UI</option>
-                                <option value="dados">Analista de Dados</option>
-                                <option value="produto">Product Manager</option>
-                                <option value="financeiro">Analista Financeiro</option>
-                            </select>
-                        </div>
-
-                        <!-- Nível de Dificuldade -->
-                        <div class="form-group">
-                            <label for="difficulty">Nível de dificuldade:</label>
-                            <select id="difficulty" class="form-select">
-                                <option value="facil">Fácil</option>
-                                <option value="medio">Médio</option>
-                                <option value="dificil">Difícil</option>
-                                <option value="expert">Expert</option>
-                            </select>
-                        </div>
-
-                        <!-- Tempo Estimado -->
-                        <div class="form-group">
-                            <label for="duration">Tempo estimado:</label>
-                            <select id="duration" class="form-select">
-                                <option value="15">15 min</option>
-                                <option value="30" selected>30 min</option>
-                                <option value="45">45 min</option>
-                                <option value="60">60 min</option>
-                            </select>
-                        </div>
-
-                        <!-- Tipo de Avaliação -->
-                        <div class="form-group">
-                            <label for="evaluationType">Tipo de Avaliação:</label>
-                            <select id="evaluationType" class="form-select">
-                                <option value="tecnica">Técnica</option>
-                                <option value="comportamental">Comportamental</option>
-                                <option value="mista">Mista</option>
-                            </select>
-                        </div>
-
-                        <!-- Botão Iniciar -->
-                        <button type="button" class="btn-start" id="startInterviewBtn">
-                            <i class="fas fa-play"></i>
-                            Iniciar Simulação
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MAIN INTERVIEW AREA (Escondida inicialmente) -->
-        <div class="interview-main" id="interviewMain" style="display: none;">
-            <!-- VIDEO AREA -->
-            <div class="video-container" id="videoContainer">
-                <!-- Vídeo da câmera -->
-                <video id="localVideo" autoplay muted playsinline class="local-video"></video>
+            <aside class="stats-panel">
                 
-                <!-- Overlay com informações -->
-                <div class="video-overlay">
-                    <div class="interview-info">
-                        <button class="menu-toggle-video" id="menuToggleVideo" title="Abrir menu">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <h2 id="interviewTitle">Simulação de Entrevista</h2>
+                <div class="card score-card">
+                    <h3>Performance Geral</h3>
+                    <div class="score-circle">
+                        <span id="score-val">--</span>
                     </div>
+                </div>
+
+                <div class="card status-list">
                     
-                    <!-- Timer -->
-                    <div class="interview-timer">
-                        <span id="timerDisplay">00:00</span>
+                    <div class="status-item">
+                        <div class="icon-box"><i class="ph ph-smiley"></i></div>
+                        <div class="info">
+                            <span class="label">Emoção Predominante</span>
+                            <span class="value" id="emo-val">Analisando...</span>
+                        </div>
                     </div>
+
+                    <div class="status-item">
+                        <div class="icon-box"><i class="ph ph-person-simple"></i></div>
+                        <div class="info">
+                            <span class="label">Postura Corporal</span>
+                            <span class="value" id="postura-val">--</span>
+                        </div>
+                        <div class="status-dot" id="dot-postura"></div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="icon-box"><i class="ph ph-eye"></i></div>
+                        <div class="info">
+                            <span class="label">Contato Visual</span>
+                            <div class="progress-bar">
+                                <div class="fill" id="eye-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-
-                <!-- Controles de Vídeo -->
-                <div class="video-controls">
-                    <button class="control-btn" id="toggleAudioBtn" title="Mutar/Desmutar">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="control-btn" id="toggleVideoBtn" title="Ligar/Desligar câmera">
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <button class="control-btn danger" id="endCallBtn" title="Encerrar entrevista">
-                        <i class="fas fa-phone-slash"></i>
-                    </button>
-                    <button class="control-btn" id="toggleChatBtn" title="Abrir chat">
-                        <i class="fas fa-comment-dots"></i>
-                    </button>
+                <div class="card feedback-box" id="feedback-txt">
+                    Aguardando início da análise...
                 </div>
 
-                <!-- Status da IA -->
-                <div class="ai-status" id="aiStatus">
-                    <div class="ai-avatar">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="ai-info">
-                        <span class="ai-name">ExcelencIA</span>
-                        <span class="ai-state" id="aiState">Ouvindo...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </aside>
+        </main>
     </div>
 
     <script src="scriptfacial.js"></script>
-    <script>
-        // Menu toggle functionality
-        const menuToggleVideo = document.getElementById('menuToggleVideo');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
-        const backHomeBtn = document.getElementById('backHomeBtn');
-        
-        const closeSidebar = () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        };
-
-        const toggleSidebar = () => {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-        };
-
-        if (menuToggleVideo) menuToggleVideo.addEventListener('click', toggleSidebar);
-
-        sidebarOverlay.addEventListener('click', closeSidebar);
-        sidebarCloseBtn.addEventListener('click', closeSidebar);
-
-        document.querySelectorAll('.simulation-item').forEach(item => {
-            item.addEventListener('click', closeSidebar);
-        });
-
-        // Redirecionar para homeLogin.html
-        if (backHomeBtn) {
-            backHomeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('Redirecionando para homeLogin.html...');
-                const currentPath = window.location.pathname;
-                const projectPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                window.location.href = projectPath + '/../html/homeLogin.html';
-            });
-        }
-
-        // Nova simulação
-        document.getElementById('newSimulationBtn')?.addEventListener('click', () => {
-            closeSidebar();
-            // Mostrar o modal de setup novamente
-            document.getElementById('setupOverlay').style.display = 'flex';
-            document.getElementById('interviewMain').style.display = 'none';
-        });
-    </script>
 </body>
 </html>
