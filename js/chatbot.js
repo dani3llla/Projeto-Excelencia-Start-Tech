@@ -156,3 +156,25 @@ document.addEventListener('DOMContentLoaded', () => {
         messageArea.appendChild(createMessageElement('Olá! Como posso ajudar na sua preparação para entrevistas hoje?', 'received'));
     }
 });
+
+
+async function callGeminiWithRetry(payload, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    const res = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) return res.json();
+
+    if (res.status === 503) {
+      await new Promise(r => setTimeout(r, 2000)); // espera 2s
+      continue;
+    }
+
+    throw new Error(`Erro ${res.status}`);
+  }
+
+  throw new Error("Gemini indisponível após várias tentativas");
+}
