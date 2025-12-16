@@ -929,10 +929,12 @@ footer::before {
     border: 1px solid rgba(0, 212, 255, 0.2);
     border-radius: 16px;
     padding: 40px 30px;
-    max-width: 900px;
+    max-width: 1200px;
     width: 90%;
+    max-height: 90vh;
     position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
 }
 
 .modal-simulacao-close {
@@ -973,7 +975,7 @@ footer::before {
 
 .simulacao-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
@@ -988,6 +990,7 @@ footer::before {
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
+    min-height: 320px;
 }
 
 .simulacao-card:hover {
@@ -1044,14 +1047,80 @@ footer::before {
 }
 
 /* Responsivo */
+@media (max-width: 1400px) {
+    .simulacao-cards-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .modal-simulacao-content {
+        padding: 35px 25px;
+        width: 95%;
+    }
+
+    .modal-simulacao-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .simulacao-cards-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .simulacao-card {
+        padding: 25px 18px;
+        min-height: 300px;
+    }
+
+    .simulacao-card-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+
+    .simulacao-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .simulacao-card p {
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+
+    .simulacao-btn {
+        padding: 11px 22px;
+        font-size: 0.9rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .modal-simulacao {
+        padding: 20px;
+    }
+
     .modal-simulacao-content {
         padding: 30px 20px;
+        width: 100%;
         border-radius: 12px;
+        max-height: 85vh;
+    }
+
+    .modal-simulacao-close {
+        right: 15px;
+        top: 15px;
+        font-size: 26px;
+    }
+
+    .modal-simulacao-header {
+        margin-bottom: 30px;
     }
 
     .modal-simulacao-header h2 {
         font-size: 1.4rem;
+        margin-bottom: 6px;
     }
 
     .modal-simulacao-header p {
@@ -1059,12 +1128,13 @@ footer::before {
     }
 
     .simulacao-cards-container {
-        gap: 15px;
         grid-template-columns: 1fr;
+        gap: 15px;
     }
 
     .simulacao-card {
-        padding: 25px 15px;
+        padding: 22px 16px;
+        min-height: 280px;
     }
 
     .simulacao-card-icon {
@@ -1075,39 +1145,48 @@ footer::before {
     }
 
     .simulacao-card h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        margin-bottom: 8px;
     }
 
     .simulacao-card p {
         font-size: 0.85rem;
+        line-height: 1.4;
         margin-bottom: 15px;
     }
 
     .simulacao-btn {
         padding: 10px 20px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
     .modal-simulacao-content {
-        width: 95%;
-        padding: 25px 15px;
+        width: 100%;
+        padding: 25px 16px;
+        border-radius: 10px;
+        max-height: 90vh;
     }
 
     .modal-simulacao-close {
         right: 12px;
         top: 12px;
-        font-size: 24px;
+        font-size: 22px;
+    }
+
+    .modal-simulacao-header {
+        margin-bottom: 25px;
     }
 
     .modal-simulacao-header h2 {
         font-size: 1.2rem;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }
 
-    .modal-simulacao-header {
-        margin-bottom: 30px;
+    .modal-simulacao-header p {
+        font-size: 0.85rem;
+        color: var(--texto-muted);
     }
 
     .simulacao-cards-container {
@@ -1115,7 +1194,8 @@ footer::before {
     }
 
     .simulacao-card {
-        padding: 20px 12px;
+        padding: 18px 14px;
+        min-height: 260px;
     }
 
     .simulacao-card-icon {
@@ -1126,21 +1206,47 @@ footer::before {
     }
 
     .simulacao-card h3 {
-        font-size: 1rem;
-        margin-bottom: 8px;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        font-weight: 600;
     }
 
     .simulacao-card p {
         font-size: 0.8rem;
+        line-height: 1.3;
         margin-bottom: 12px;
     }
 
     .simulacao-btn {
-        padding: 10px 18px;
-        font-size: 0.85rem;
+        padding: 9px 18px;
+        font-size: 0.8rem;
+        padding: 8px 16px;
     }
 }
 
+@media (max-width: 360px) {
+    .modal-simulacao-content {
+        padding: 20px 12px;
+    }
+
+    .modal-simulacao-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .simulacao-card {
+        padding: 15px 12px;
+        min-height: 240px;
+    }
+
+    .simulacao-card h3 {
+        font-size: 0.9rem;
+    }
+
+    .simulacao-card p {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+    }
+}
 
 /* .............. LOADER HOME LOGIN ...............  */
 .loader-overlay {
