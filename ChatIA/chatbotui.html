@@ -138,7 +138,7 @@
                                 <option value="rh">Analista de RH</option>
                                 <option value="design">Designer UX/UI</option>
                                 <option value="dados">Analista de Dados</option>
-                                <option value="produto">Product Manager</option>
+                                <option value="produto">Atendimento ao cliente</option>
                                 <option value="financeiro">Analista Financeiro</option>
                             </select>
                         </div>
@@ -259,28 +259,67 @@
         </div>
     </div>
 
+
     <script>
         /* =============================================== */
-        /* ========== MODAL DE SETUP - INÍCIO ========== */
+        /* ========== ENTREVISTA FAKE - CONFIG ============ */
+        /* Área: ATENDIMENTO AO CLIENTE                    */
         /* =============================================== */
-        
-        // Elementos do modal de setup
+
+        const interviewQuestions = [
+            {
+                question: "Fale um pouco sobre você e sua experiência com atendimento ao cliente.",
+                keywords: [
+                    "atendimento", "cliente", "clientes", "experiência", "contato", "público",
+                    "comunicação", "ajudar", "suporte", "vendas", "call center", "recepção",
+                    "resolver", "problemas", "ouvir", "lidar", "pessoas", "serviço"
+                ]
+            },
+            {
+                question: "O que você considera um bom atendimento ao cliente?",
+                keywords: [
+                    "educação", "respeito", "empatia", "paciência", "atenção", "ouvir",
+                    "clareza", "solução", "agilidade", "cordial", "gentileza",
+                    "comunicação", "entender", "cliente", "qualidade", "bom atendimento"
+                ]
+            },
+            {
+                question: "Como você lida com um cliente insatisfeito ou reclamando?",
+                keywords: [
+                    "calma", "paciência", "empatia", "ouvir", "entender", "resolver",
+                    "solução", "profissionalismo", "respeito", "explicar", "ajudar",
+                    "dialogar", "controle", "educação", "tranquilidade"
+                ]
+            },
+            {
+                question: "Por que você acha importante tratar bem o cliente, mesmo em situações difíceis?",
+                keywords: [
+                    "respeito", "imagem", "empresa", "fidelizar", "confiança", "satisfação",
+                    "cliente", "experiência", "profissionalismo", "relacionamento",
+                    "boa impressão", "manter", "credibilidade", "qualidade"
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+
+        /* =============================================== */
+        /* ========== MODAL DE SETUP ====================== */
+        /* =============================================== */
+
         const setupOverlay = document.getElementById('setupOverlay');
-        const setupModal = document.getElementById('setupModal');
         const chatMain = document.getElementById('chatMain');
         const startInterviewBtn = document.getElementById('startInterviewBtn');
         const professionalAreaSelect = document.getElementById('professionalArea');
-        const difficultySelect = document.getElementById('difficulty');
         const durationSelect = document.getElementById('duration');
-        const evaluationTypeSelect = document.getElementById('evaluationType');
         const chatTitleElement = document.getElementById('chatTitle');
 
-        // Timer refs
         const timerDisplay = document.getElementById('timerDisplay');
-        const chatTimerEl = document.getElementById('chatTimer');
         const endInterviewBtn = document.getElementById('endInterviewBtn');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
+
         let timerInterval = null;
         let timeLeftSec = 0;
 
@@ -292,250 +331,147 @@
 
         function updateTimerUI() {
             timerDisplay.textContent = formatTime(timeLeftSec);
-            chatTimerEl.classList.remove('warn', 'danger');
-            if (timeLeftSec <= 60) {
-                chatTimerEl.classList.add('danger');
-            } else if (timeLeftSec <= 5 * 60) {
-                chatTimerEl.classList.add('warn');
-            }
-        }
-
-        function endInterviewDueToTime() {
-            addMessage('Tempo encerrado! A entrevista terminou. Obrigado por participar.', false);
-            messageInput.disabled = true;
-            sendBtn.disabled = true;
-            endInterviewBtn.disabled = true;
-
-            // calcula e exibe score
-            const percent = calculatePerformance();
-            showScoreModal(percent);
-        }
-
-        function endInterviewManually() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            addMessage('Você encerrou a simulação. Obrigado por participar!', false);
-            messageInput.disabled = true;
-            sendBtn.disabled = true;
-            endInterviewBtn.disabled = true;
-
-            // calcula e exibe score
-            const percent = calculatePerformance();
-            showScoreModal(percent);
         }
 
         function startTimer(minutes) {
-            // limpar timers anteriores
             if (timerInterval) clearInterval(timerInterval);
-            timeLeftSec = Math.max(0, parseInt(minutes, 10) || 0) * 60;
+            timeLeftSec = Number(minutes) * 60;
             updateTimerUI();
-            if (timeLeftSec === 0) {
-                endInterviewDueToTime();
-                return;
-            }
+
             timerInterval = setInterval(() => {
-                timeLeftSec -= 1;
+                timeLeftSec--;
                 updateTimerUI();
                 if (timeLeftSec <= 0) {
                     clearInterval(timerInterval);
-                    timerInterval = null;
-                    endInterviewDueToTime();
+                    finishInterview();
                 }
             }, 1000);
         }
 
-        // Função para iniciar a entrevista
         startInterviewBtn.addEventListener('click', () => {
-            // Validar se uma área foi selecionada
             if (!professionalAreaSelect.value) {
-                alert('Por favor, selecione uma área profissional antes de continuar.');
+                alert('Selecione uma área profissional.');
                 return;
             }
-            
-            // Coletar dados da simulação
-            const simulationData = {
-                area: professionalAreaSelect.options[professionalAreaSelect.selectedIndex].text,
-                difficulty: difficultySelect.options[difficultySelect.selectedIndex].text,
-                duration: durationSelect.value,
-                evaluationType: evaluationTypeSelect.options[evaluationTypeSelect.selectedIndex].text
-            };
-            
-            // Atualizar título do chat
-            chatTitleElement.textContent = `Simulação de Entrevista - ${simulationData.area}`;
-            
-            // Esconder modal e mostrar chat
+
+            chatTitleElement.textContent = "Simulação de Entrevista - Atendimento ao Cliente";
             setupOverlay.style.display = 'none';
             chatMain.style.display = 'flex';
 
-            // iniciar temporizador com o tempo escolhido
-            startTimer(Number(simulationData.duration));
-            
-            // Adicionar mensagem inicial da IA
+            startTimer(durationSelect.value);
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+
             setTimeout(() => {
-                addMessage(
-                    `Olá! Bem-vindo à simulação de entrevista para ${simulationData.area}. ` +
-                    `Esta é uma entrevista ${simulationData.evaluationType} de nível ${simulationData.difficulty}. ` +
-                    `Vamos começar! Conte-me um pouco sobre você e sua experiência.`,
-                    false
-                );
-            }, 500);
-            
-            console.log('Iniciando simulação com:', simulationData);
+                addMessage("Olá! Esta é uma simulação de entrevista para Atendimento ao Cliente. Vamos começar.", false);
+                setTimeout(() => {
+                    addMessage(interviewQuestions[0].question, false);
+                }, 600);
+            }, 400);
         });
-        
-        // Botão terminar simulação
+
         endInterviewBtn.addEventListener('click', () => {
-            const confirmEnd = confirm('Deseja realmente encerrar a simulação agora?');
-            if (confirmEnd) {
-                endInterviewManually();
+            if (confirm('Deseja encerrar a simulação?')) {
+                finishInterview();
             }
         });
-        
+
         /* =============================================== */
-        /* ========== MODAL DE SETUP - FIM ============= */
+        /* ========== CHAT ================================ */
         /* =============================================== */
 
-        // Menu toggle functionality
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const messagesArea = document.getElementById('messagesArea');
         const chatForm = document.getElementById('chatForm');
-        const backHomeBtn = document.getElementById('backHomeBtn');
 
-        const closeSidebar = () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        };
-
-        // Back to home button
-        backHomeBtn.addEventListener('click', () => {
-            window.location.href = '../html/homeLogin.html';
-        });
-
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-        });
-
-        // Close sidebar when clicking on overlay
-        sidebarOverlay.addEventListener('click', closeSidebar);
-
-        // Close sidebar when clicking close button
-        sidebarCloseBtn.addEventListener('click', closeSidebar);
-
-        // Close sidebar when clicking on a chat item
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.addEventListener('click', closeSidebar);
-        });
-
-        // Function to add message to chat
-        function addMessage(text, isUser, score = null, feedback = null) {
-            // Remove empty state on first message
-            if (messagesArea.querySelector('.empty-state')) {
-                messagesArea.innerHTML = '';
-            }
-
+        function addMessage(text, isUser) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
-
-            let contentHTML = `
-                <div class="message-content">
-                    ${text}
-                    ${score ? `<div class="message-score">Score: ${score} - ${feedback}</div>` : ''}
-                </div>
-                <div class="message-icon">
-                    <i class="fas fa-${isUser ? 'user' : 'robot'}"></i>
-                </div>
-            `;
-
-            if (isUser) {
-                contentHTML = `
-                    <div class="message-content">
-                        ${text}
-                    </div>
-                    <div class="message-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                `;
-            }
-
-            messageDiv.innerHTML = contentHTML;
+            messageDiv.innerHTML = `
+        <div class="message-content">${text}</div>
+        <div class="message-icon">
+            <i class="fas fa-${isUser ? 'user' : 'robot'}"></i>
+        </div>
+    `;
             messagesArea.appendChild(messageDiv);
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
-        // Handle form submission
+        function checkKeywords(answer, keywords) {
+            const text = answer.toLowerCase();
+            return keywords.some(word => text.includes(word));
+        }
+
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = messageInput.value.trim();
+            if (!text) return;
 
-            if (text) {
-                addMessage(text, true);
-                messageInput.value = '';
+            addMessage(text, true);
 
-                // Simulate bot response
-                setTimeout(() => {
-                    addMessage('Ótima resposta! Você demonstrou um bom conhecimento. Agora vamos para a próxima pergunta...');
-                }, 500);
+            const currentQuestion = interviewQuestions[currentQuestionIndex];
+            if (checkKeywords(text, currentQuestion.keywords)) {
+                correctAnswers++;
             }
+
+            messageInput.value = '';
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < interviewQuestions.length) {
+                    addMessage(interviewQuestions[currentQuestionIndex].question, false);
+                } else {
+                    finishInterview();
+                }
+            }, 600);
         });
 
-        // Refs da UI do score
+        /* =============================================== */
+        /* ========== SCORE =============================== */
+        /* =============================================== */
+
+        function calculatePerformance() {
+            const base = 50;
+            const bonus = correctAnswers * 10;
+            return Math.min(base + bonus, 100);
+        }
+
         const scoreOverlay = document.getElementById('scoreOverlay');
-        const scoreCloseBtn = document.getElementById('scoreCloseBtn');
         const scorePercentEl = document.getElementById('scorePercent');
         const scoreCircleEl = document.getElementById('scoreCircle');
-        const viewReportBtn = document.getElementById('viewReportBtn');
+        const scoreCloseBtn = document.getElementById('scoreCloseBtn');
 
-        function clamp(n, min, max) {
-            return Math.max(min, Math.min(max, n));
-        }
+        function finishInterview() {
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            endInterviewBtn.disabled = true;
 
-        // Calcula uma % simples baseada em quantidade e tamanho médio das respostas do usuário
-        function calculatePerformance() {
-            const userMsgs = [...document.querySelectorAll('#messagesArea .message.user .message-content')];
-            if (userMsgs.length === 0) return 50; // base se não respondeu
-            const lengths = userMsgs.map(el => (el.textContent || '').trim().length);
-            const avgLen = lengths.reduce((a, b) => a + b, 0) / lengths.length;
-
-            // fórmula simples: base 55 + impacto por qtd de mensagens + impacto por tamanho médio
-            let score = 55 + (userMsgs.length * 6) + (avgLen / 12);
-            score = clamp(Math.round(score), 0, 100);
-            // se muito curto, empurra para faixa média
-            if (score < 45 && userMsgs.length > 0) score = 45 + Math.min(10, userMsgs.length * 3);
-            return score;
-        }
-
-        function showScoreModal(percent) {
-            const p = clamp(percent, 0, 100);
-            scorePercentEl.textContent = p + '%';
-            scoreCircleEl.style.setProperty('--p', p + '%');
+            const score = calculatePerformance();
+            scorePercentEl.textContent = score + '%';
+            scoreCircleEl.style.setProperty('--p', score + '%');
             scoreOverlay.classList.add('active');
-            scoreOverlay.setAttribute('aria-hidden', 'false');
         }
 
-        function hideScoreModal() {
+        scoreCloseBtn.addEventListener('click', () => {
             scoreOverlay.classList.remove('active');
-            scoreOverlay.setAttribute('aria-hidden', 'true');
+        });
+        // Redirecionamento: Ver relatório e Voltar para home
+        const viewReportBtn = document.getElementById('viewReportBtn');
+        if (viewReportBtn) {
+            viewReportBtn.addEventListener('click', () => {
+                scoreOverlay.classList.remove('active');
+                window.location.href = '../html/relatorios.html';
+            });
         }
 
-        scoreCloseBtn.addEventListener('click', hideScoreModal);
-        scoreOverlay.addEventListener('click', (e) => {
-            if (e.target === scoreOverlay) hideScoreModal();
-        });
-        viewReportBtn.addEventListener('click', () => {
-            window.location.href = '../html/relatorios.html';
-        });
-
-        // Opcional: limpar o timer ao sair da página
-        window.addEventListener('beforeunload', () => {
-            if (timerInterval) clearInterval(timerInterval);
-        });
+        const backHomeBtn = document.getElementById('backHomeBtn');
+        if (backHomeBtn) {
+            backHomeBtn.addEventListener('click', () => {
+                window.location.href = '../html/homeLogin.html';
+            });
+        }
     </script>
+
+
     <script src="script-chat.js"></script>
 </body>
 

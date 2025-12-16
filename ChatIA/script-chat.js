@@ -350,7 +350,8 @@ function handleKeyDown(e) {
 
 // ========== VOLTAR PARA HOME ==========
 function goBackHome() {
-    window.location.href = '/html/homeLogin.html';
+    // usar caminho relativo a partir das páginas na pasta ChatIA
+    window.location.href = '../html/homeLogin.html';
 }
 
 // ========== GERENCIAMENTO DE CONVERSAS ==========
