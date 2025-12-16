@@ -5,12 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Entrevista - IA</title>
     <link rel="stylesheet" href="chatfacial.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
+    <!-- OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img class="logo-excelencia" src="../assets/tema escuro/logo-excelencia.PNG" alt="ExcelencIA">
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Fechar menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <button class="back-home-btn" id="backHomeBtn" title="Voltar para página inicial">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </button>
+
+        <button class="new-chat-btn" id="newChatBtn">
+            <i class="fas fa-plus"></i>
+            Nova Conversa
+        </button>
+
+        <div class="chat-history" id="chatHistory">
+            <div class="chat-item active" data-chat-id="1">Entrevista Facial</div>
+            <div class="chat-item" data-chat-id="2">Dicas de postura</div>
+            <div class="chat-item" data-chat-id="3">Análise de expressões</div>
+            <div class="chat-item" data-chat-id="4">Preparação visual</div>
+            <div class="chat-item" data-chat-id="5">Feedback anterior</div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
+            <button class="menu-toggle" id="menuToggle" title="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
             <h1>Simulador de Entrevista</h1>
             <p>Análise comportamental em tempo real via IA</p>
         </header>
@@ -70,5 +105,34 @@
     </div>
 
     <script src="scriptfacial.js"></script>
+    <script>
+        // Menu toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const backHomeBtn = document.getElementById('backHomeBtn');
+
+        const closeSidebar = () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        };
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        sidebarCloseBtn.addEventListener('click', closeSidebar);
+
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.addEventListener('click', closeSidebar);
+        });
+
+        backHomeBtn.addEventListener('click', () => {
+            window.location.href = '../html/homeLogin.html';
+        });
+    </script>
 </body>
 </html>
