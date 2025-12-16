@@ -218,7 +218,7 @@ async function fazerLogin(event) {
             localStorage.setItem("usuarioId", usuarioLogado.id);
 
             // ========== REDIRECIONAR APÓS LOGIN ==========
-            window.location.href = "/Projeto-Excelencia-Start-Tech/html/homeLogin.html";
+            window.location.href = "/html/homeLogin.html";
 
         } else {
             alert("E-mail ou senha incorretos.");
