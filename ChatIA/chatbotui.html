@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="chat.css">
     <link rel="shortcut icon" type="image/x-icon" href="../assets/tema escuro/excelencia texto ia.PNG">
+
 </head>
 
 <body>
@@ -84,10 +85,11 @@
                         <div class="form-group">
                             <label for="duration">Tempo estimado:</label>
                             <select id="duration" class="form-select">
+                                <!-- corrigido: 1 min agora é value="1" -->
+                                <option value="1">1 min</option>
                                 <option value="15">15 min</option>
                                 <option value="30" selected>30 min</option>
                                 <option value="45">45 min</option>
-                                <option value="60">60 min</option>
                             </select>
                         </div>
 
@@ -119,6 +121,10 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="chat-title" id="chatTitle">Simulação de Entrevista</div>
+                <!-- Timer visível -->
+                <div class="chat-timer" id="chatTimer" aria-live="polite" title="Tempo restante">
+                    ⏱️ <span id="timerDisplay">--:--</span>
+                </div>
             </div>
 
             <!-- MESSAGES -->
@@ -153,6 +159,26 @@
                 </form>
             </div>
         </div>
+
+        <!-- ===== SCORE MODAL (aparece ao terminar o tempo) ===== -->
+        <div class="score-overlay" id="scoreOverlay" aria-hidden="true">
+            <div class="score-modal" role="dialog" aria-modal="true" aria-labelledby="scoreTitle">
+                <button class="score-close-btn" id="scoreCloseBtn" aria-label="Fechar">&times;</button>
+                <div class="score-header">
+                    <h2 id="scoreTitle">Seu Desempenho</h2>
+                    <p class="score-subtitle">Resumo da sua simulação</p>
+                </div>
+                <div class="score-body">
+                    <div class="score-circle" id="scoreCircle" style="--p:0%">
+                        <span id="scorePercent">0%</span>
+                    </div>
+                    <p class="score-note">Continue praticando para melhorar ainda mais.</p>
+                </div>
+                <div class="score-actions">
+                    <button class="btn-report" id="viewReportBtn">Ver relatório geral</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -170,7 +196,59 @@
         const durationSelect = document.getElementById('duration');
         const evaluationTypeSelect = document.getElementById('evaluationType');
         const chatTitleElement = document.getElementById('chatTitle');
-        
+
+        // Timer refs
+        const timerDisplay = document.getElementById('timerDisplay');
+        const chatTimerEl = document.getElementById('chatTimer');
+        let timerInterval = null;
+        let timeLeftSec = 0;
+
+        function formatTime(totalSec) {
+            const m = Math.floor(totalSec / 60);
+            const s = totalSec % 60;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updateTimerUI() {
+            timerDisplay.textContent = formatTime(timeLeftSec);
+            chatTimerEl.classList.remove('warn', 'danger');
+            if (timeLeftSec <= 60) {
+                chatTimerEl.classList.add('danger');
+            } else if (timeLeftSec <= 5 * 60) {
+                chatTimerEl.classList.add('warn');
+            }
+        }
+
+        function endInterviewDueToTime() {
+            addMessage('Tempo encerrado! A entrevista terminou. Obrigado por participar.', false);
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // calcula e exibe score
+            const percent = calculatePerformance();
+            showScoreModal(percent);
+        }
+
+        function startTimer(minutes) {
+            // limpar timers anteriores
+            if (timerInterval) clearInterval(timerInterval);
+            timeLeftSec = Math.max(0, parseInt(minutes, 10) || 0) * 60;
+            updateTimerUI();
+            if (timeLeftSec === 0) {
+                endInterviewDueToTime();
+                return;
+            }
+            timerInterval = setInterval(() => {
+                timeLeftSec -= 1;
+                updateTimerUI();
+                if (timeLeftSec <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    endInterviewDueToTime();
+                }
+            }, 1000);
+        }
+
         // Função para iniciar a entrevista
         startInterviewBtn.addEventListener('click', () => {
             // Validar se uma área foi selecionada
@@ -193,6 +271,9 @@
             // Esconder modal e mostrar chat
             setupOverlay.style.display = 'none';
             chatMain.style.display = 'flex';
+
+            // iniciar temporizador com o tempo escolhido
+            startTimer(Number(simulationData.duration));
             
             // Adicionar mensagem inicial da IA
             setTimeout(() => {
@@ -297,6 +378,58 @@
                     addMessage('Ótima resposta! Você demonstrou um bom conhecimento. Agora vamos para a próxima pergunta...');
                 }, 500);
             }
+        });
+
+        // Refs da UI do score
+        const scoreOverlay = document.getElementById('scoreOverlay');
+        const scoreCloseBtn = document.getElementById('scoreCloseBtn');
+        const scorePercentEl = document.getElementById('scorePercent');
+        const scoreCircleEl = document.getElementById('scoreCircle');
+        const viewReportBtn = document.getElementById('viewReportBtn');
+
+        function clamp(n, min, max) {
+            return Math.max(min, Math.min(max, n));
+        }
+
+        // Calcula uma % simples baseada em quantidade e tamanho médio das respostas do usuário
+        function calculatePerformance() {
+            const userMsgs = [...document.querySelectorAll('#messagesArea .message.user .message-content')];
+            if (userMsgs.length === 0) return 50; // base se não respondeu
+            const lengths = userMsgs.map(el => (el.textContent || '').trim().length);
+            const avgLen = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+
+            // fórmula simples: base 55 + impacto por qtd de mensagens + impacto por tamanho médio
+            let score = 55 + (userMsgs.length * 6) + (avgLen / 12);
+            score = clamp(Math.round(score), 0, 100);
+            // se muito curto, empurra para faixa média
+            if (score < 45 && userMsgs.length > 0) score = 45 + Math.min(10, userMsgs.length * 3);
+            return score;
+        }
+
+        function showScoreModal(percent) {
+            const p = clamp(percent, 0, 100);
+            scorePercentEl.textContent = p + '%';
+            scoreCircleEl.style.setProperty('--p', p + '%');
+            scoreOverlay.classList.add('active');
+            scoreOverlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function hideScoreModal() {
+            scoreOverlay.classList.remove('active');
+            scoreOverlay.setAttribute('aria-hidden', 'true');
+        }
+
+        scoreCloseBtn.addEventListener('click', hideScoreModal);
+        scoreOverlay.addEventListener('click', (e) => {
+            if (e.target === scoreOverlay) hideScoreModal();
+        });
+        viewReportBtn.addEventListener('click', () => {
+            window.location.href = '../html/relatorios.html';
+        });
+
+        // Opcional: limpar o timer ao sair da página
+        window.addEventListener('beforeunload', () => {
+            if (timerInterval) clearInterval(timerInterval);
         });
     </script>
     <script src="script-chat.js"></script>

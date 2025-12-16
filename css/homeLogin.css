@@ -241,7 +241,7 @@ main {
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #ffffff;
+    border: 4px solid var(--cor-destaque);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 

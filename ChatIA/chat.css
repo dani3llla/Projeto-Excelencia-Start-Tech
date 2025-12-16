@@ -741,3 +741,131 @@ body {
         font-size: 1rem;
     }
 }
+
+
+/* ............... MODAL E TEMPORIZADOR ....................  */
+      /* Timer minimal styling (não depende do chat.css) */
+        .chat-header {
+            align-items: center;
+        }
+
+        .chat-timer {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .chat-timer.warn {
+            color: #ffb020;
+        }
+
+        .chat-timer.danger {
+            color: #ff5b5b;
+        }
+
+        /* ===== SCORE MODAL ===== */
+        .score-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .score-overlay.active {
+            display: flex;
+        }
+
+        .score-modal {
+            background: #0b1430;
+            color: #fff;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            width: min(520px, 92%);
+            padding: 24px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+            position: relative;
+        }
+
+        .score-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .score-header h2 {
+            margin: 0 0 4px 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .score-subtitle {
+            margin: 0 0 16px 0;
+            color: #aab2c8;
+            font-size: .95rem;
+        }
+
+        .score-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0 16px;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(closest-side, #0b1430 79%, transparent 80% 100%),
+                conic-gradient(#1d5d50 var(--p, 0%), #2b385e 0);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .score-circle span {
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .score-note {
+            color: #c2c8da;
+            font-size: .95rem;
+            text-align: center;
+        }
+
+        .score-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-report {
+            background: linear-gradient(135deg, #1d5d50, #357065);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-report:hover {
+            opacity: .95;
+        }
+/* ............... MODAL E TEMPORIZADOR ....................  */
