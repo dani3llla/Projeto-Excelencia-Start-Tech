@@ -21,7 +21,7 @@
 7. [Quick Start](#-quick-start)
 8. [Testes e Limitações](#-testes-e-limitações)
 9. [Roadmap](#-roadmap)
-10. [Equipe ExcelencIA](#-equipe-excelencia)
+10. [Equipe ExcelencIA](#-autores)
 11. [Licença](#-licença)
 
 ---
