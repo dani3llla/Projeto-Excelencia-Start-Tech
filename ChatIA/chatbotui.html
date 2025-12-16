@@ -9,6 +9,82 @@
     <link rel="stylesheet" href="chat.css">
     <link rel="shortcut icon" type="image/x-icon" href="../assets/tema escuro/excelencia texto ia.PNG">
 
+    <style>
+        /* Timer minimal styling (não depende do chat.css) */
+        .chat-header {
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-timer {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .chat-timer.warn {
+            color: #ffb020;
+        }
+
+        .chat-timer.danger {
+            color: #ff5b5b;
+        }
+
+        /* Botão Terminar Simulação */
+        .end-interview-btn {
+            background: linear-gradient(135deg, #d63031, #e74c3c);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .end-interview-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .end-interview-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .chat-header {
+                flex-wrap: wrap;
+            }
+
+            .end-interview-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .end-interview-btn span {
+                display: none;
+            }
+
+            .chat-timer {
+                padding: 5px 8px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ===== SCORE MODAL ===== */
+        /* ...existing code... */
+    </style>
 </head>
 
 <body>
@@ -125,6 +201,11 @@
                 <div class="chat-timer" id="chatTimer" aria-live="polite" title="Tempo restante">
                     ⏱️ <span id="timerDisplay">--:--</span>
                 </div>
+                <!-- Botão Terminar Simulação -->
+                <button class="end-interview-btn" id="endInterviewBtn" title="Terminar simulação agora">
+                    <i class="fas fa-stop-circle"></i>
+                    <span>Terminar</span>
+                </button>
             </div>
 
             <!-- MESSAGES -->
@@ -200,6 +281,9 @@
         // Timer refs
         const timerDisplay = document.getElementById('timerDisplay');
         const chatTimerEl = document.getElementById('chatTimer');
+        const endInterviewBtn = document.getElementById('endInterviewBtn');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
         let timerInterval = null;
         let timeLeftSec = 0;
 
@@ -223,6 +307,22 @@
             addMessage('Tempo encerrado! A entrevista terminou. Obrigado por participar.', false);
             messageInput.disabled = true;
             sendBtn.disabled = true;
+            endInterviewBtn.disabled = true;
+
+            // calcula e exibe score
+            const percent = calculatePerformance();
+            showScoreModal(percent);
+        }
+
+        function endInterviewManually() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            addMessage('Você encerrou a simulação. Obrigado por participar!', false);
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            endInterviewBtn.disabled = true;
 
             // calcula e exibe score
             const percent = calculatePerformance();
@@ -288,6 +388,14 @@
             console.log('Iniciando simulação com:', simulationData);
         });
         
+        // Botão terminar simulação
+        endInterviewBtn.addEventListener('click', () => {
+            const confirmEnd = confirm('Deseja realmente encerrar a simulação agora?');
+            if (confirmEnd) {
+                endInterviewManually();
+            }
+        });
+        
         /* =============================================== */
         /* ========== MODAL DE SETUP - FIM ============= */
         /* =============================================== */
@@ -299,7 +407,6 @@
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const messagesArea = document.getElementById('messagesArea');
         const chatForm = document.getElementById('chatForm');
-        const messageInput = document.getElementById('messageInput');
         const backHomeBtn = document.getElementById('backHomeBtn');
 
         const closeSidebar = () => {
